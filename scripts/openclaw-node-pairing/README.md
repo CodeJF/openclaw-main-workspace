@@ -21,6 +21,8 @@
   - 本地一键后台启动 SSH 本地转发 + OpenClaw node
 - `mac_node_down.sh`
   - 本地一键关闭 SSH 本地转发 + OpenClaw node
+- `mac_node_session.sh`
+  - 本地前台交互式启动，显示步骤进度；按 Ctrl+C 自动清理 SSH 和 node
 
 ## 使用步骤
 
@@ -56,6 +58,13 @@ GATEWAY_TOKEN='<云端打印出的token>' \
 ```bash
 chmod +x /Users/jianfengxu/.openclaw/workspace/scripts/openclaw-node-pairing/*.sh
 bash /Users/jianfengxu/.openclaw/workspace/scripts/openclaw-node-pairing/mac_node_up.sh
+```
+
+#### 方式 C：前台交互式会话（你截图里那种效果）
+
+```bash
+chmod +x /Users/jianfengxu/.openclaw/workspace/scripts/openclaw-node-pairing/*.sh
+bash /Users/jianfengxu/.openclaw/workspace/scripts/openclaw-node-pairing/mac_node_session.sh
 ```
 
 这个脚本会自动：
