@@ -108,8 +108,10 @@ openclaw nodes list
 
 ## 说明
 
-1. `mac_pair_to_cloud.sh` 最后是以前台运行的，方便你看到配对日志。
-2. 如果本地 `18790` 已被占用，可改：
+1. 现在脚本会固定使用同一个 node identity（默认 `master-mac-node`），避免每次重连都触发新的 pairing。
+   固定身份文件：`mac_node_identity.env`
+2. `mac_pair_to_cloud.sh` 最后是以前台运行的，方便你看到配对日志。
+3. 如果本地 `18790` 已被占用，可改：
 
 ```bash
 LOCAL_FORWARD_PORT=18792 GATEWAY_TOKEN='<token>' bash ./mac_pair_to_cloud.sh

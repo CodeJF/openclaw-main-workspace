@@ -16,6 +16,17 @@ LOCAL_FORWARD_PORT="${LOCAL_FORWARD_PORT:-18790}"
 REMOTE_GATEWAY_PORT="${REMOTE_GATEWAY_PORT:-18789}"
 LOCAL_NODE_DISPLAY_NAME="${LOCAL_NODE_DISPLAY_NAME:-Master-Mac}"
 GATEWAY_TOKEN="${GATEWAY_TOKEN:-}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+IDENTITY_FILE="${IDENTITY_FILE:-$SCRIPT_DIR/mac_node_identity.env}"
+NODE_ID="${NODE_ID:-}"
+
+if [[ -f "$IDENTITY_FILE" ]]; then
+  # shellcheck disable=SC1090
+  source "$IDENTITY_FILE"
+fi
+
+NODE_ID="${NODE_ID:-master-mac-node}"
+LOCAL_NODE_DISPLAY_NAME="${DISPLAY_NAME:-$LOCAL_NODE_DISPLAY_NAME}"
 
 if ! command -v openclaw >/dev/null 2>&1; then
   echo "❌ 未找到 openclaw 命令，请先在本机安装 OpenClaw" >&2
@@ -64,4 +75,5 @@ OPENCLAW_GATEWAY_TOKEN="$GATEWAY_TOKEN" \
 openclaw node run \
   --host 127.0.0.1 \
   --port "$LOCAL_FORWARD_PORT" \
+  --node-id "$NODE_ID" \
   --display-name "$LOCAL_NODE_DISPLAY_NAME"
