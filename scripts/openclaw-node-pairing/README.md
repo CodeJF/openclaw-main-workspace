@@ -1,11 +1,11 @@
 # OpenClaw 云端 Gateway ↔ 本地 macOS Node 配对脚本
 
-目标：让**云端 OpenClaw**可以通过 **SSH 反向隧道**访问并操作**本地 macOS**。
+目标：让**本地 macOS 上的 OpenClaw node**主动连到**云端 OpenClaw Gateway**，并额外保留 SSH 反向隧道作为云端到本地辅助访问通道。
 
 ## 架构
 
 - 云端 Gateway：`47.119.177.99`
-- 云端本地隧道入口：`127.0.0.1:18790`
+- 云端 Gateway：`47.119.177.99:18789`
 - 本地 macOS node host：`127.0.0.1:18791`
 - SSH 反向隧道：`cloud 127.0.0.1:18790 -> mac 127.0.0.1:18791`
 

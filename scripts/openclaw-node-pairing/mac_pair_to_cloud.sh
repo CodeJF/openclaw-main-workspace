@@ -64,6 +64,6 @@ echo "按 Ctrl+C 可停止该 node 进程；SSH 隧道保持后台运行。"
 echo
 OPENCLAW_GATEWAY_TOKEN="$GATEWAY_TOKEN" \
 openclaw node run \
-  --host 127.0.0.1 \
-  --port "$CLOUD_TUNNEL_PORT" \
+  --host "$CLOUD_HOST" \
+  --port 18789 \
   --display-name "$LOCAL_NODE_DISPLAY_NAME"
