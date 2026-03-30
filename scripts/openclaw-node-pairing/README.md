@@ -1,22 +1,22 @@
 # OpenClaw 云端 Gateway ↔ 本地 macOS Node 配对脚本
 
-目标：让**本地 macOS 上的 OpenClaw node**主动连到**云端 OpenClaw Gateway**，并额外保留 SSH 反向隧道作为云端到本地辅助访问通道。
+目标：让**本地 macOS 上的 OpenClaw node**通过 **SSH 本地转发**连接到**云端 OpenClaw Gateway**。
 
-## 架构
+## 正确拓扑
 
-- 云端 Gateway：`47.119.177.99`
-- 云端 Gateway：`47.119.177.99:18789`
-- 本地 macOS node host：`127.0.0.1:18791`
-- SSH 反向隧道：`cloud 127.0.0.1:18790 -> mac 127.0.0.1:18791`
+- 云端 OpenClaw Gateway：`127.0.0.1:18789`（运行在 `47.119.177.99`）
+- 本地 SSH 转发入口：`127.0.0.1:18790`
+- SSH 本地转发：`本地 127.0.0.1:18790 -> 云端 127.0.0.1:18789`
+- 本地 node 连接：`openclaw node run --host 127.0.0.1 --port 18790`
 
 ## 文件
 
 - `cloud_show_token.sh`
-  - 在云端打印 gateway token / devices / nodes 状态
+  - 在云端打印 gateway token / gateway 监听 / devices / nodes 状态
 - `cloud_approve_latest_node.sh`
   - 在云端查看 pending node 请求，并给出 approve 命令
 - `mac_pair_to_cloud.sh`
-  - 在本地 Mac 上启动 node host、建立 SSH 反向隧道、以前台方式启动 node 连接云端
+  - 在本地 Mac 上建立 SSH 本地转发，并以前台方式启动 node 连接云端
 
 ## 使用步骤
 
@@ -47,6 +47,18 @@ GATEWAY_TOKEN='<云端打印出的token>' \
   bash /Users/jianfengxu/.openclaw/workspace/scripts/openclaw-node-pairing/mac_pair_to_cloud.sh
 ```
 
+这个脚本会先建立：
+
+```bash
+ssh -i /Users/jianfengxu/Downloads/has_jianfeng_key.pem -N -L 18790:127.0.0.1:18789 root@47.119.177.99
+```
+
+然后执行：
+
+```bash
+OPENCLAW_GATEWAY_TOKEN='<token>' openclaw node run --host 127.0.0.1 --port 18790 --display-name 'Master-Mac'
+```
+
 ### 4. 在云端批准 pending node
 
 ```bash
@@ -69,9 +81,13 @@ openclaw nodes list
 
 ## 说明
 
-1. `mac_pair_to_cloud.sh` 里 `openclaw node run` 是以前台运行的，方便你看到配对日志。
-2. SSH 反向隧道是后台运行的；如果想停掉，手动 kill 对应 ssh 进程即可。
-3. 这个方案的关键是：
-   - **Mac 主动出站**连云端
-   - 云端不直接打 NAT 内网里的 Mac
-4. 若本机 `openclaw node install/restart` 因 launchd 环境失败，也可以直接让脚本前台起 `node run`，本方案已经这么做了。
+1. `mac_pair_to_cloud.sh` 最后是以前台运行的，方便你看到配对日志。
+2. 如果本地 `18790` 已被占用，可改：
+
+```bash
+LOCAL_FORWARD_PORT=18792 GATEWAY_TOKEN='<token>' bash ./mac_pair_to_cloud.sh
+```
+
+3. 本方案的关键是：
+   - **本地 node 主动连接云端 gateway**
+   - 通过 SSH 本地转发，把远端 gateway 映射成本地可访问端口

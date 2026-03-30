@@ -21,6 +21,10 @@ print(data.get('gateway', {}).get('auth', {}).get('token', ''))
 PY
 
 echo
+echo "== gateway listen =="
+ss -ltnp | grep 18789 || true
+
+echo
 echo "== devices list =="
 openclaw devices list || true
 

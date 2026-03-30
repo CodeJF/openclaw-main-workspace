@@ -2,23 +2,19 @@
 set -euo pipefail
 
 # mac_pair_to_cloud.sh
-# 用途：在本地 macOS 上启动 OpenClaw node，并通过 SSH 反向隧道暴露给云端 OpenClaw Gateway。
+# 用途：在本地 macOS 上建立到云端 OpenClaw Gateway 的 SSH 本地转发，
+# 然后让本地 OpenClaw node 通过本机 127.0.0.1:18790 去连接云端 Gateway。
 #
-# 默认拓扑：
-#   cloud gateway (47.119.177.99) --connects--> 127.0.0.1:18790 on cloud
-#   该端口由本机 SSH 反向隧道转发到 macOS 上本地 node host 监听端口（默认 18791）
-#
-# 使用前：
-#   1) 先在云端拿到 GATEWAY_TOKEN
-#   2) 确保本机已安装 openclaw CLI
-#   3) 确保 SSH key 可用
+# 正确拓扑：
+#   本地 127.0.0.1:18790 --SSH本地转发--> 云端 127.0.0.1:18789 (OpenClaw Gateway)
+#   本地 openclaw node run --host 127.0.0.1 --port 18790
 
 CLOUD_HOST="${CLOUD_HOST:-47.119.177.99}"
 CLOUD_USER="${CLOUD_USER:-root}"
 SSH_KEY="${SSH_KEY:-/Users/jianfengxu/Downloads/has_jianfeng_key.pem}"
-CLOUD_TUNNEL_PORT="${CLOUD_TUNNEL_PORT:-18790}"
-LOCAL_NODE_PORT="${LOCAL_NODE_PORT:-18791}"
-LOCAL_NODE_DISPLAY_NAME="${LOCAL_NODE_DISPLAY_NAME:-macOS-node}"
+LOCAL_FORWARD_PORT="${LOCAL_FORWARD_PORT:-18790}"
+REMOTE_GATEWAY_PORT="${REMOTE_GATEWAY_PORT:-18789}"
+LOCAL_NODE_DISPLAY_NAME="${LOCAL_NODE_DISPLAY_NAME:-Master-Mac}"
 GATEWAY_TOKEN="${GATEWAY_TOKEN:-}"
 
 if ! command -v openclaw >/dev/null 2>&1; then
@@ -41,29 +37,31 @@ echo "== 本地环境检查 =="
 openclaw --version || true
 
 echo
-echo "== 启动/重启本地 OpenClaw node host 服务 =="
-openclaw node install || true
-openclaw node restart || openclaw node install
-sleep 2
-openclaw node status || true
-
-echo
-echo "== 通过 SSH 建立反向隧道 =="
-echo "云端 127.0.0.1:${CLOUD_TUNNEL_PORT} -> 本地 127.0.0.1:${LOCAL_NODE_PORT}"
+echo "== 建立 SSH 本地转发 =="
+echo "本地 127.0.0.1:${LOCAL_FORWARD_PORT} -> 云端 127.0.0.1:${REMOTE_GATEWAY_PORT}"
 ssh -f -N \
   -i "$SSH_KEY" \
   -o ExitOnForwardFailure=yes \
   -o ServerAliveInterval=30 \
   -o ServerAliveCountMax=3 \
-  -R "${CLOUD_TUNNEL_PORT}:127.0.0.1:${LOCAL_NODE_PORT}" \
+  -L "${LOCAL_FORWARD_PORT}:127.0.0.1:${REMOTE_GATEWAY_PORT}" \
   "${CLOUD_USER}@${CLOUD_HOST}"
 
 echo
-echo "== 前台启动本地 node 连接到云端隧道入口 =="
-echo "按 Ctrl+C 可停止该 node 进程；SSH 隧道保持后台运行。"
+echo "== 检查本地转发端口 =="
+if command -v nc >/dev/null 2>&1; then
+  nc -z 127.0.0.1 "$LOCAL_FORWARD_PORT"
+  echo "✅ 本地转发端口 127.0.0.1:${LOCAL_FORWARD_PORT} 可连接"
+else
+  echo "ℹ️ 未找到 nc，跳过端口探测"
+fi
+
+echo
+echo "== 前台启动本地 node 连接云端 Gateway =="
+echo "按 Ctrl+C 可停止该 node 进程；SSH 本地转发保持后台运行。"
 echo
 OPENCLAW_GATEWAY_TOKEN="$GATEWAY_TOKEN" \
 openclaw node run \
-  --host "$CLOUD_HOST" \
-  --port 18789 \
+  --host 127.0.0.1 \
+  --port "$LOCAL_FORWARD_PORT" \
   --display-name "$LOCAL_NODE_DISPLAY_NAME"
