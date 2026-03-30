@@ -17,6 +17,10 @@
   - 在云端查看 pending node 请求，并给出 approve 命令
 - `mac_pair_to_cloud.sh`
   - 在本地 Mac 上建立 SSH 本地转发，并以前台方式启动 node 连接云端
+- `mac_node_up.sh`
+  - 本地一键后台启动 SSH 本地转发 + OpenClaw node
+- `mac_node_down.sh`
+  - 本地一键关闭 SSH 本地转发 + OpenClaw node
 
 ## 使用步骤
 
@@ -39,7 +43,7 @@ ssh -i /Users/jianfengxu/Downloads/has_jianfeng_key.pem root@47.119.177.99 \
 
 ### 3. 在本地 Mac 发起 node 连接
 
-把上一步打印出来的 token 填进去：
+#### 方式 A：前台调试模式
 
 ```bash
 chmod +x /Users/jianfengxu/.openclaw/workspace/scripts/openclaw-node-pairing/*.sh
@@ -47,16 +51,30 @@ GATEWAY_TOKEN='<云端打印出的token>' \
   bash /Users/jianfengxu/.openclaw/workspace/scripts/openclaw-node-pairing/mac_pair_to_cloud.sh
 ```
 
-这个脚本会先建立：
+#### 方式 B：一键后台启动（推荐日常使用）
+
+```bash
+chmod +x /Users/jianfengxu/.openclaw/workspace/scripts/openclaw-node-pairing/*.sh
+bash /Users/jianfengxu/.openclaw/workspace/scripts/openclaw-node-pairing/mac_node_up.sh
+```
+
+这个脚本会自动：
 
 ```bash
 ssh -i /Users/jianfengxu/Downloads/has_jianfeng_key.pem -N -L 18790:127.0.0.1:18789 root@47.119.177.99
+OPENCLAW_GATEWAY_TOKEN='<token>' openclaw node run --host 127.0.0.1 --port 18790 --display-name 'Master-Mac'
 ```
 
-然后执行：
+并把 PID / 日志写到：
 
 ```bash
-OPENCLAW_GATEWAY_TOKEN='<token>' openclaw node run --host 127.0.0.1 --port 18790 --display-name 'Master-Mac'
+~/.openclaw-node-pairing/
+```
+
+关闭时执行：
+
+```bash
+bash /Users/jianfengxu/.openclaw/workspace/scripts/openclaw-node-pairing/mac_node_down.sh
 ```
 
 ### 4. 在云端批准 pending node
