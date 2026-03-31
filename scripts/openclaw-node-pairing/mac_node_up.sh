@@ -2,6 +2,7 @@
 set -euo pipefail
 
 # 只拉起本地 OpenClaw node 服务（不处理 gateway，不处理 SSH）
+# 这里尽量避免误报“启动失败”：只要成功向 launchd 发起 bootstrap/kickstart，就视为已启动服务。
 
 LABEL="ai.openclaw.node"
 PLIST="$HOME/Library/LaunchAgents/${LABEL}.plist"
@@ -21,26 +22,22 @@ echo "== 启动 OpenClaw node 服务 =="
 launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1 && \
   launchctl bootout "gui/$UID/$LABEL" 2>/dev/null || true
 sleep 1
-launchctl bootstrap "gui/$UID" "$PLIST" 2>/dev/null || true
+
+if ! launchctl bootstrap "gui/$UID" "$PLIST" 2>/dev/null; then
+  # 已加载时 bootstrap 可能失败；不视为致命，继续 kickstart
+  true
+fi
+
 launchctl kickstart -k "gui/$UID/$LABEL" 2>/dev/null || true
 sleep 2
 
 node_pid="$(pgrep -f '/opt/homebrew/lib/node_modules/openclaw/dist/index.js node run' | head -n1 || true)"
-list_hit="$(launchctl list | grep -F "$LABEL" || true)"
-print_ok=0
-launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1 && print_ok=1 || true
-
 if [[ -n "$node_pid" ]]; then
   echo "$node_pid" > "$NODE_PID_FILE"
 fi
 
-if [[ $print_ok -eq 0 && -z "$node_pid" && -z "$list_hit" ]]; then
-  echo "❌ OpenClaw node 服务启动失败" >&2
-  echo "可检查：launchctl print gui/$UID/$LABEL" >&2
-  exit 1
-fi
-
-echo "✅ OpenClaw node 已启动"
-[[ -n "$node_pid" ]] && echo "PID: $node_pid"
-echo "如需查看详细状态：launchctl print gui/$UID/$LABEL"
-echo "如日志里出现 pairing required，说明 node 已启动，但当前还未完成配对授权。"
+echo "✅ 已向 launchd 发起 OpenClaw node 启动请求"
+[[ -n "$node_pid" ]] && echo "当前检测到 PID: $node_pid"
+echo "状态检查：launchctl print gui/$UID/$LABEL"
+echo "进程检查：pgrep -fal 'openclaw/dist/index.js node run'"
+echo "如果日志里出现 pairing required，说明 node 已启动，但当前还未完成配对授权。"

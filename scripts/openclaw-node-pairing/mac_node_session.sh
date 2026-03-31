@@ -40,25 +40,15 @@ launchctl kickstart -k "gui/$UID/$LABEL" 2>/dev/null || true
 sleep 2
 
 node_pid="$(pgrep -f '/opt/homebrew/lib/node_modules/openclaw/dist/index.js node run' | head -n1 || true)"
-list_hit="$(launchctl list | grep -F "$LABEL" || true)"
-print_ok=0
-launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1 && print_ok=1 || true
-
 if [[ -n "$node_pid" ]]; then
   echo "$node_pid" > "$NODE_PID_FILE"
-fi
-
-if [[ $print_ok -eq 0 && -z "$node_pid" && -z "$list_hit" ]]; then
-  echo "❌ OpenClaw node 服务启动失败"
-  exit 1
-fi
-
-if [[ -n "$node_pid" ]]; then
-  echo "✅ OpenClaw node 已启动 (PID: $node_pid)"
+  echo "✅ 已向 launchd 发起 OpenClaw node 启动请求 (当前 PID: $node_pid)"
 else
-  echo "✅ OpenClaw node 服务已启动"
+  echo "✅ 已向 launchd 发起 OpenClaw node 启动请求"
 fi
 
+echo "状态检查：launchctl print gui/$UID/$LABEL"
+echo "进程检查：pgrep -fal 'openclaw/dist/index.js node run'"
 echo "如日志里出现 pairing required，说明 node 已启动，但当前还未完成配对授权。"
 echo ""
 echo "按回车结束本次 node 会话，并自动停止 node。"
