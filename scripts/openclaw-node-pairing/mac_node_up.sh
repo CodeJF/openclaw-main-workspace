@@ -7,7 +7,6 @@ LABEL="ai.openclaw.node"
 PLIST="$HOME/Library/LaunchAgents/${LABEL}.plist"
 STATE_DIR="$HOME/.openclaw-node-pairing"
 NODE_PID_FILE="$STATE_DIR/node.pid"
-NODE_LOG_FILE="$STATE_DIR/node.log"
 
 mkdir -p "$STATE_DIR"
 
@@ -19,26 +18,25 @@ fi
 
 echo "== 启动 OpenClaw node 服务 =="
 
-launchctl bootout "gui/$UID/$LABEL" 2>/dev/null || true
+launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1 && \
+  launchctl bootout "gui/$UID/$LABEL" 2>/dev/null || true
 sleep 1
-launchctl bootstrap "gui/$UID" "$PLIST"
+launchctl bootstrap "gui/$UID" "$PLIST" 2>/dev/null || true
 launchctl kickstart -k "gui/$UID/$LABEL"
 sleep 2
+
+if ! launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1; then
+  echo "❌ OpenClaw node 服务启动失败" >&2
+  echo "可检查：launchctl print gui/$UID/$LABEL" >&2
+  exit 1
+fi
 
 node_pid="$(pgrep -f '/opt/homebrew/lib/node_modules/openclaw/dist/index.js node run' | head -n1 || true)"
 if [[ -n "$node_pid" ]]; then
   echo "$node_pid" > "$NODE_PID_FILE"
 fi
 
-if ! launchctl list | grep -q "$LABEL"; then
-  echo "❌ OpenClaw node 服务启动失败" >&2
-  exit 1
-fi
-
 echo "✅ OpenClaw node 已启动"
-if [[ -n "$node_pid" ]]; then
-  echo "PID: $node_pid"
-fi
-
-echo "日志可查看：tail -f /tmp/openclaw/openclaw-$(date +%F).log"
-[[ -f "$NODE_LOG_FILE" ]] && echo "历史日志文件：$NODE_LOG_FILE"
+[[ -n "$node_pid" ]] && echo "PID: $node_pid"
+echo "如需查看详细状态：launchctl print gui/$UID/$LABEL"
+echo "如日志里出现 pairing required，说明 node 已启动，但当前还未完成配对授权。"

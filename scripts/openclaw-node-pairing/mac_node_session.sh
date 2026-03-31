@@ -32,20 +32,27 @@ echo "只处理 node；不处理 gateway；不处理 SSH。"
 echo ""
 
 echo "== 启动 OpenClaw node 服务 =="
-launchctl bootout "gui/$UID/$LABEL" 2>/dev/null || true
+launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1 && \
+  launchctl bootout "gui/$UID/$LABEL" 2>/dev/null || true
 sleep 1
-launchctl bootstrap "gui/$UID" "$PLIST"
+launchctl bootstrap "gui/$UID" "$PLIST" 2>/dev/null || true
 launchctl kickstart -k "gui/$UID/$LABEL"
 sleep 2
+
+if ! launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1; then
+  echo "❌ OpenClaw node 服务启动失败"
+  exit 1
+fi
 
 node_pid="$(pgrep -f '/opt/homebrew/lib/node_modules/openclaw/dist/index.js node run' | head -n1 || true)"
 if [[ -n "$node_pid" ]]; then
   echo "$node_pid" > "$NODE_PID_FILE"
   echo "✅ OpenClaw node 已启动 (PID: $node_pid)"
 else
-  echo "⚠️ 已请求启动 node，但暂未抓到 PID；可执行 launchctl list | grep openclaw 检查"
+  echo "✅ OpenClaw node 服务已启动"
 fi
 
+echo "如日志里出现 pairing required，说明 node 已启动，但当前还未完成配对授权。"
 echo ""
 echo "按回车结束本次 node 会话，并自动停止 node。"
 read -r _
