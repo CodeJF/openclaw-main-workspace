@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 交互式 node 会话：只启动本地 OpenClaw node，按回车结束时停止 node
+# 交互式 node 会话：只启动本地 OpenClaw node，按回车结束时停止 node 并禁用自动拉起
 
 LABEL="ai.openclaw.node"
 PLIST="$HOME/Library/LaunchAgents/${LABEL}.plist"
+DISABLED_PLIST="$HOME/Library/LaunchAgents/${LABEL}.plist.disabled"
 STATE_DIR="$HOME/.openclaw-node-pairing"
 NODE_PID_FILE="$STATE_DIR/node.pid"
 
 mkdir -p "$STATE_DIR"
+
+if [[ ! -f "$PLIST" && -f "$DISABLED_PLIST" ]]; then
+  mv "$DISABLED_PLIST" "$PLIST"
+  echo "ℹ️ 已恢复 LaunchAgent：$PLIST"
+fi
 
 if [[ ! -f "$PLIST" ]]; then
   echo "❌ 未找到 LaunchAgent: $PLIST" >&2
@@ -22,6 +28,10 @@ cleanup() {
   pkill -f '/opt/homebrew/lib/node_modules/openclaw/dist/index.js node run' 2>/dev/null || true
   pkill -f 'openclaw node run' 2>/dev/null || true
   rm -f "$NODE_PID_FILE"
+  if [[ -f "$PLIST" ]]; then
+    mv "$PLIST" "$DISABLED_PLIST"
+    echo "ℹ️ 已临时禁用 LaunchAgent：$DISABLED_PLIST"
+  fi
   echo "✅ OpenClaw node 已停止"
 }
 

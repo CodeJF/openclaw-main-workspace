@@ -2,14 +2,20 @@
 set -euo pipefail
 
 # 只拉起本地 OpenClaw node 服务（不处理 gateway，不处理 SSH）
-# 这里尽量避免误报“启动失败”：只要成功向 launchd 发起 bootstrap/kickstart，就视为已启动服务。
+# 如果 stop 时禁用了 LaunchAgent，这里会自动恢复 plist 后再启动。
 
 LABEL="ai.openclaw.node"
 PLIST="$HOME/Library/LaunchAgents/${LABEL}.plist"
+DISABLED_PLIST="$HOME/Library/LaunchAgents/${LABEL}.plist.disabled"
 STATE_DIR="$HOME/.openclaw-node-pairing"
 NODE_PID_FILE="$STATE_DIR/node.pid"
 
 mkdir -p "$STATE_DIR"
+
+if [[ ! -f "$PLIST" && -f "$DISABLED_PLIST" ]]; then
+  mv "$DISABLED_PLIST" "$PLIST"
+  echo "ℹ️ 已恢复 LaunchAgent：$PLIST"
+fi
 
 if [[ ! -f "$PLIST" ]]; then
   echo "❌ 未找到 LaunchAgent: $PLIST" >&2
@@ -22,12 +28,7 @@ echo "== 启动 OpenClaw node 服务 =="
 launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1 && \
   launchctl bootout "gui/$UID/$LABEL" 2>/dev/null || true
 sleep 1
-
-if ! launchctl bootstrap "gui/$UID" "$PLIST" 2>/dev/null; then
-  # 已加载时 bootstrap 可能失败；不视为致命，继续 kickstart
-  true
-fi
-
+launchctl bootstrap "gui/$UID" "$PLIST" 2>/dev/null || true
 launchctl kickstart -k "gui/$UID/$LABEL" 2>/dev/null || true
 sleep 2
 
