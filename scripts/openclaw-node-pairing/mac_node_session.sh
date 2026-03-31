@@ -36,17 +36,24 @@ launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1 && \
   launchctl bootout "gui/$UID/$LABEL" 2>/dev/null || true
 sleep 1
 launchctl bootstrap "gui/$UID" "$PLIST" 2>/dev/null || true
-launchctl kickstart -k "gui/$UID/$LABEL"
+launchctl kickstart -k "gui/$UID/$LABEL" 2>/dev/null || true
 sleep 2
 
-if ! launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1; then
+node_pid="$(pgrep -f '/opt/homebrew/lib/node_modules/openclaw/dist/index.js node run' | head -n1 || true)"
+list_hit="$(launchctl list | grep -F "$LABEL" || true)"
+print_ok=0
+launchctl print "gui/$UID/$LABEL" >/dev/null 2>&1 && print_ok=1 || true
+
+if [[ -n "$node_pid" ]]; then
+  echo "$node_pid" > "$NODE_PID_FILE"
+fi
+
+if [[ $print_ok -eq 0 && -z "$node_pid" && -z "$list_hit" ]]; then
   echo "❌ OpenClaw node 服务启动失败"
   exit 1
 fi
 
-node_pid="$(pgrep -f '/opt/homebrew/lib/node_modules/openclaw/dist/index.js node run' | head -n1 || true)"
 if [[ -n "$node_pid" ]]; then
-  echo "$node_pid" > "$NODE_PID_FILE"
   echo "✅ OpenClaw node 已启动 (PID: $node_pid)"
 else
   echo "✅ OpenClaw node 服务已启动"
