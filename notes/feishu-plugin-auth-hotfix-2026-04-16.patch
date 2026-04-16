@@ -1,0 +1,58 @@
+--- /root/.openclaw/extensions/openclaw-lark/src/tools/oauth.js.bak.20260416093526
++++ /root/.openclaw/extensions/openclaw-lark/src/tools/oauth.js
+@@ -181,22 +181,6 @@
+ async function executeAuthorize(params) {
+     const { account, senderOpenId, scope, isBatchAuth, totalAppScopes, alreadyGranted, batchInfo, skipSyntheticMessage, showBatchAuthHint, forceAuth, onAuthComplete, cfg, ticket, } = params;
+     const { appId, appSecret, brand, accountId } = account;
+-    // 0. Check if the user is the app owner (fail-close: 安全优先).
+-    const sdk = lark_client_1.LarkClient.fromAccount(account).sdk;
+-    try {
+-        await (0, owner_policy_1.assertOwnerAccessStrict)(account, sdk, senderOpenId);
+-    }
+-    catch (err) {
+-        if (err instanceof owner_policy_1.OwnerAccessDeniedError) {
+-            log.warn(`non-owner user ${senderOpenId} attempted to authorize`);
+-            return (0, helpers_1.json)({
+-                error: 'permission_denied',
+-                message: '当前应用仅限所有者（App Owner）使用。您没有权限发起授权，无法使用相关功能。',
+-            });
+-        }
+-        throw err;
+-    }
+-    // effectiveScope：可变 scope 变量，后续可能因 pendingFlow 合并而扩大
+     let effectiveScope = scope;
+     // 1. Check if user already authorised + scope coverage.
+     // forceAuth=true 时跳过缓存检查，直接发起新 Device Flow。
+--- /root/.openclaw/extensions/openclaw-lark/src/core/tool-client.js.bak.20260416115506
++++ /root/.openclaw/extensions/openclaw-lark/src/core/tool-client.js
+@@ -270,8 +270,6 @@
+                 appId: this.account.appId,
+             });
+         }
+-        // Owner 检查：非 owner 用户直接拒绝（从 uat-client.ts 迁移至此）
+-        await (0, owner_policy_1.assertOwnerAccessStrict)(this.account, this.sdk, userOpenId);
+         // 预检：是否有已存储的 token
+         const stored = await (0, token_store_1.getStoredToken)(this.account.appId, userOpenId);
+         if (!stored) {
+--- /root/.openclaw/extensions/openclaw-lark/src/tools/oauth-batch-auth.js.bak.20260416095409
++++ /root/.openclaw/extensions/openclaw-lark/src/tools/oauth-batch-auth.js
+@@ -25,8 +25,9 @@
+ const lark_logger_1 = require("../core/lark-logger.js");
+ const log = (0, lark_logger_1.larkLogger)('tools/oauth-batch-auth');
+ const FeishuOAuthBatchAuthSchema = typebox_1.Type.Object({}, {
+-    description: '飞书批量授权工具。一次性授权应用已开通的所有用户权限（User Access Token scope）。' +
++    description: '飞书批量授权工具。为当前用户一次性授权应用已开通但其尚未授权的所有用户权限（User Access Token scope）。' +
+         "【使用场景】用户明确要求'授权所有权限'、'一次性授权完成'时使用。" +
++        '该工具会为当前用户一次性发起其尚未授权的全部已开通用户权限授权。' +
+         '【重要】禁止主动推荐此工具，仅在用户明确要求时使用。',
+ });
+ function registerFeishuOAuthBatchAuthTool(api) {
+@@ -36,7 +37,7 @@
+     (0, helpers_1.registerTool)(api, {
+         name: 'feishu_oauth_batch_auth',
+         label: 'Feishu: OAuth Batch Authorization',
+-        description: '飞书批量授权工具，一次性授权应用已开通的所有用户权限。' +
++        description: '飞书批量授权工具，为当前用户一次性授权应用已开通但其尚未授权的所有用户权限。' +
+             "仅在用户明确要求'授权所有权限'、'一次性授权'时使用。",
+         parameters: FeishuOAuthBatchAuthSchema,
+         async execute(_toolCallId, _params) {
