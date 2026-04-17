@@ -8,3 +8,5 @@ notes/*.tar.gz
 scripts/.DS_Store
 migration-artifacts/.DS_Store
 memory/*.tmp
+
+migration-artifacts/stage/
