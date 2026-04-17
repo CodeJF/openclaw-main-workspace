@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Server-side helper for Alibaba Cloud OpenClaw.
+# Canonical workflow: local macOS edits/pushes, server only pulls.
+
 WORKSPACES=(
   /root/.openclaw/workspace
   /root/.openclaw/workspace-interviewer
@@ -10,6 +13,9 @@ WORKSPACES=(
 for repo in "${WORKSPACES[@]}"; do
   if [[ -d "$repo/.git" ]]; then
     branch=$(git -C "$repo" rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)
+    if [[ "$branch" == "HEAD" || -z "$branch" ]]; then
+      branch=main
+    fi
     echo "[pull] $repo ($branch)"
     git -C "$repo" fetch --all --prune
     git -C "$repo" checkout "$branch"
@@ -19,5 +25,5 @@ for repo in "${WORKSPACES[@]}"; do
   fi
 done
 
-sudo systemctl restart openclaw
-sudo systemctl --no-pager --full status openclaw -n 20 || true
+systemctl restart openclaw
+systemctl --no-pager --full status openclaw -n 20 || true
