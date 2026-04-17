@@ -1,5 +1,10 @@
 .DS_Store
 .gitignore.bak.*
+MEMORY.md
+memory/
 qr.txt
 migration-artifacts/*.tar.gz
+notes/*.tar.gz
+scripts/.DS_Store
+migration-artifacts/.DS_Store
 memory/*.tmp

@@ -101,8 +101,7 @@
           "alias": "minimax-m2.5-lightning"
         }
       },
-      "workspace": "~/.openclaw/workspace",
-      "workspace": "~/.openclaw/workspace",
+      "workspace": "/root/.openclaw/workspace",
       "compaction": {
         "mode": "safeguard"
       },
@@ -116,10 +115,8 @@
       {
         "id": "main",
         "name": "main",
-        "workspace": "~/.openclaw/workspace",
-        "agentDir": "~/.openclaw/agents/main/agent",
-        "workspace": "~/.openclaw/workspace",
-        "agentDir": "~/.openclaw/agents/main/agent",
+        "workspace": "/root/.openclaw/workspace",
+        "agentDir": "/root/.openclaw/agents/main/agent",
         "model": "openai-codex/gpt-5.4",
         "tools": {
           "alsoAllow": [
@@ -164,10 +161,8 @@
       {
         "id": "interviewer",
         "name": "interviewer",
-        "workspace": "~/.openclaw/workspace-interviewer",
-        "agentDir": "~/.openclaw/agents/interviewer/agent",
-        "workspace": "~/.openclaw/workspace-interviewer",
-        "agentDir": "~/.openclaw/agents/interviewer/agent",
+        "workspace": "/root/.openclaw/workspace-interviewer",
+        "agentDir": "/root/.openclaw/agents/interviewer/agent",
         "tools": {
           "alsoAllow": [
             "feishu_bitable_app",
@@ -293,7 +288,7 @@
   "gateway": {
     "port": 18789,
     "mode": "local",
-    "bind": "loopback",
+    "bind": "custom",
     "auth": {
       "mode": "token",
       "token": "187b27425dd1fa98fc20ab762d7c00da6a38d1b7b7de90b4"
@@ -313,7 +308,8 @@
         "reminders.add",
         "sms.send"
       ]
-    }
+    },
+    "customBindHost": "0.0.0.0"
   },
   "plugins": {
     "allow": [
@@ -338,7 +334,6 @@
       "openclaw-lark": {
         "source": "archive",
         "sourcePath": "/var/folders/z5/gkgmd0kj64ldly_zk7620y8m0000gn/T/openclaw-lark-W3Y0hi/larksuite-openclaw-lark-2026.3.25.tgz",
-        "installPath": "~/.openclaw/extensions/openclaw-lark",
         "installPath": "/Users/jianfengxu/.openclaw/extensions/openclaw-lark",
         "version": "2026.3.25",
         "installedAt": "2026-03-24T09:53:58.720Z"
