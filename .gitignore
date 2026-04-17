@@ -1,7 +1,5 @@
 .DS_Store
-.openclaw/
+.gitignore.bak.*
 qr.txt
-migration-artifacts/
-memory/
-*.log
-*.tgz
+migration-artifacts/*.tar.gz
+memory/*.tmp
