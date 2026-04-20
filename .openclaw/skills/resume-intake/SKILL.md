@@ -1,74 +1,74 @@
 ---
 name: resume-intake
-description: Parse inbound resume PDFs into conservative candidate fields and generate guarded Feishu write plans for the resume-intake business flow. Use when handling 简历录入 / resume intake tasks such as: (1) downloading or receiving a candidate PDF resume, (2) extracting text from the PDF, (3) mapping resume text into the approved safe fields set, (4) preparing Feishu Bitable create/update payloads for the fixed intake target, (5) attaching the original PDF to the created record, or (6) checking whether a requested intake write is allowed by the business guardrails. Do not use for generic Bitable exploration or creating new business targets without explicit confirmation.
+description: 将收到的简历 PDF 解析为保守的候选人字段，并为固定的 resume-intake 业务链路生成受保护的飞书写入计划。适用于这类场景：（1）接收或下载候选人 PDF 简历；（2）从 PDF 中提取文本；（3）把简历内容映射到批准的安全字段集合；（4）为固定目标生成飞书多维表格 create/update payload；（5）把原始 PDF 回填到已创建记录的附件字段；（6）检查某次简历录入写入是否符合业务护栏。不要用于通用 Bitable 探索，也不要在未明确确认前用于创建新的业务目标。
 ---
 
-# Resume Intake
+# 简历录入
 
-## Overview
+## 概览
 
-Use this skill for the fixed 简历录入业务链路: PDF 简历 → 文本提取 → 保守字段抽取 → 受保护写入计划 → 附件回填。
+这个 skill 只服务于固定的简历录入业务链路：PDF 简历 → 文本提取 → 保守字段抽取 → 受保护写入计划 → 附件回填。
 
-Keep the default path narrow. Prefer the approved target and safe fields only. If the target, table, or field mapping is ambiguous, stop and confirm instead of guessing.
+默认路径要尽量收敛，只使用已经批准的目标和安全字段。如果目标、数据表、字段映射存在歧义，先停下来确认，不要猜。
 
-## Quick workflow
+## 快速流程
 
-1. Confirm this is a resume-intake task, not generic Bitable work.
-2. If you need the business rules or target registry, read `references/business-rules.md`.
-3. If you need the exact field set or extraction heuristics, read `references/field-mapping.md`.
-4. If you need to produce a guarded execution plan, run the scripts in `scripts/` rather than re-deriving payloads ad hoc.
-5. Execute actual writes with first-class OpenClaw Feishu tools, not direct tenant-token OpenAPI calls.
+1. 先确认这是不是简历录入任务，而不是通用的 Bitable 操作。
+2. 如果需要看业务规则、目标注册表或写入顺序，读取 `references/business-rules.md`。
+3. 如果需要看批准字段、提取规则或归一化方式，读取 `references/field-mapping.md`。
+4. 如果需要产出受保护的执行计划，优先运行 `scripts/` 下的脚本，不要临时在上下文里重新推导 payload。
+5. 实际写入时，使用 OpenClaw 的一等飞书工具，不要直接走 tenant-token OpenAPI。
 
-## Guardrails
+## 护栏
 
-- Use the fixed business target unless the user explicitly asks to register or switch targets.
-- Do not invent candidate data. Leave uncertain fields empty.
-- Treat success as:
-  - fields create success + attachment update success => complete success
-  - fields create success + attachment failure => partial success
-  - fields create failure => failed
-- For the fixed path, allow only record `create` and attachment `update` against an approved target.
-- Do not use this skill for generic table discovery, broad search, or schema exploration in the production intake path.
+- 除非用户明确要求注册新目标或切换目标，否则只使用固定业务目标。
+- 不得编造候选人数据；不确定的字段留空。
+- 结果判定规则：
+  - 字段创建成功 + 附件更新成功 => 完整成功
+  - 字段创建成功 + 附件更新失败 => 部分成功
+  - 字段创建失败 => 失败
+- 在固定链路里，只允许对批准目标执行记录 `create` 和附件字段 `update`。
+- 不要把这个 skill 用于生产链路中的泛化表发现、广义搜索或 schema 探索。
 
-## What to read and when
+## 什么时候读什么
 
-- Read `references/business-rules.md` when you need the target registry, write policy, runtime sequence, or success criteria.
-- Read `references/field-mapping.md` when you need the approved safe fields, extraction heuristics, normalization choices, or examples.
-- Run `scripts/extract_resume_text.py` when you have a PDF and need plain text.
-- Run `scripts/build_candidate_fields.py` when you have resume text and need conservative field JSON.
-- Run `scripts/guarded_bitable_write.py` when you need a validated create/update payload for an approved target.
-- Run `scripts/guarded_attachment_update.py` when you already have `record_id` and `file_token` and need the attachment update payload.
-- Run `scripts/tool_entry_resume_intake.py` when you want the end-to-end local planning artifact for the full business flow.
+- 需要目标注册表、写入策略、运行顺序或成功判定时，读取 `references/business-rules.md`。
+- 需要批准字段集合、提取启发式、归一化规则或示例时，读取 `references/field-mapping.md`。
+- 手里有 PDF，想提取纯文本时，运行 `scripts/extract_resume_text.py`。
+- 手里有简历文本，想生成保守字段 JSON 时，运行 `scripts/build_candidate_fields.py`。
+- 需要为批准目标生成校验过的 create/update payload 时，运行 `scripts/guarded_bitable_write.py`。
+- 已经拿到 `record_id` 和 `file_token`，想生成附件更新 payload 时，运行 `scripts/guarded_attachment_update.py`。
+- 想一次性生成端到端本地计划产物时，运行 `scripts/tool_entry_resume_intake.py`。
 
-## Execution pattern
+## 执行模式
 
-### 1) Local planning
+### 1）本地规划
 
-Prefer local planning scripts to produce deterministic artifacts:
+优先使用本地脚本产出稳定工件：
 
 - `resume.txt`
 - `fields.json`
 - `create_payload.json`
 - `tool_plan.json`
 
-Recommended work directory pattern:
+推荐工作目录模式：
 
 ```text
 runtime/inbound/<message_id>/
 ```
 
-### 2) Real writes
+### 2）实际写入
 
-Use OpenClaw Feishu tools for the actual writes:
+实际写入使用 OpenClaw 飞书工具：
 
 - `feishu_bitable_app_table_record.create`
 - `feishu_drive_file.upload`
 - `feishu_bitable_app_table_record.update`
 
-### 3) User-visible response
+### 3）对用户反馈
 
-Report whether the result is complete success, partial success, or failure. Be explicit about attachment failures.
+明确告知结果是完整成功、部分成功还是失败。若附件失败，要单独说明。
 
-## Notes for future extension
+## 后续扩展说明
 
-If the user wants to support a new intake target, new safe-field set, or a second business flow, add that as a separate reference or sibling skill instead of bloating this one. Keep this skill focused on the production resume-intake path and progressive disclosure.
+如果后面要支持新的 intake 目标、新的安全字段集，或第二条业务流，优先新增独立 reference 或兄弟 skill，不要把这个 skill 膨胀成大而全。这个 skill 只聚焦当前生产简历录入链路和渐进式披露。

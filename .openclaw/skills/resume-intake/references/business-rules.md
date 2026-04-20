@@ -1,12 +1,12 @@
-# Resume Intake Business Rules
+# 简历录入业务规则
 
-## Approved production target
+## 已批准的生产目标
 
-Default target key:
+默认目标 key：
 
 - `resume_intake_v1`
 
-Current registry:
+当前注册表：
 
 ```json
 {
@@ -18,54 +18,54 @@ Current registry:
 }
 ```
 
-## Business goal
+## 业务目标
 
-When a Feishu user uploads a PDF resume, the default production action is:
+当飞书用户上传 PDF 简历时，默认生产动作是：
 
-1. create a candidate record in the approved Bitable target
-2. upload the original PDF
-3. update the created record's `附件` field with the uploaded file token
+1. 在批准的多维表格目标中创建候选人记录
+2. 上传原始 PDF
+3. 使用上传后的 file token 回填已创建记录的 `附件` 字段
 
-## Safe write scope
+## 安全写入范围
 
-Allowed in the fixed production path:
+在固定生产链路中允许：
 
 - `feishu_bitable_app_table_record.create`
-- `feishu_bitable_app_table_record.update` for attachment backfill only
+- 仅用于附件回填的 `feishu_bitable_app_table_record.update`
 - `feishu_drive_file.upload`
 
-Disallowed in the fixed production path:
+在固定生产链路中禁止：
 
-- generic app/table creation
-- target inference from vague business labels
-- switching targets without explicit confirmation
-- direct tenant-token OpenAPI writes when user-identity Feishu tools are available
+- 通用 app/table 创建
+- 根据模糊业务标签推断目标
+- 未经明确确认就切换目标
+- 在已有用户身份飞书工具可用时，直接走 tenant-token OpenAPI 写入
 
-## Success criteria
+## 成功判定
 
-- Create success + attachment success => complete success
-- Create success + attachment failure => partial success
-- Create failure => failed
+- 创建成功 + 附件成功 => 完整成功
+- 创建成功 + 附件失败 => 部分成功
+- 创建失败 => 失败
 
-## Runtime order
+## 运行顺序
 
-1. download or locate PDF
-2. extract text from PDF
-3. build conservative fields JSON
-4. generate guarded create payload
-5. execute create
-6. upload original PDF
-7. generate guarded attachment update payload
-8. execute update
-9. report result
+1. 下载或定位 PDF
+2. 从 PDF 提取文本
+3. 生成保守字段 JSON
+4. 生成受保护的 create payload
+5. 执行 create
+6. 上传原始 PDF
+7. 生成受保护的附件 update payload
+8. 执行 update
+9. 汇报结果
 
-## Registering a new target
+## 注册新目标的前置条件
 
-Require all of the following before allowing a new target entry:
+只有在以下条件都满足时，才允许新增目标条目：
 
-- explicit business intent
-- real `app_token`
-- real `table_id`
-- confirmation that registration is for write routing, not for creating a new app/table
+- 业务意图明确
+- 拿到真实 `app_token`
+- 拿到真实 `table_id`
+- 已确认这是用于写入路由，不是要新建 app/table
 
-If any of the above is missing, stop and ask.
+任一条件缺失，都先停下来确认。

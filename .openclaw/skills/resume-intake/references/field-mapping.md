@@ -1,8 +1,8 @@
-# Resume Intake Field Mapping
+# 简历录入字段映射
 
-## Approved safe fields
+## 已批准的安全字段
 
-Only populate fields that are reliable enough for the production intake path:
+固定生产链路里，只填写这些可靠度足够高的字段：
 
 - 应聘者姓名
 - 年龄
@@ -17,32 +17,32 @@ Only populate fields that are reliable enough for the production intake path:
 - 期望薪资
 - 附件
 
-Anything else should remain empty unless the business rules are explicitly expanded.
+除非业务规则被明确扩展，否则其他字段一律留空。
 
-## Extraction philosophy
+## 提取原则
 
-- Do not hallucinate.
-- Prefer empty over wrong.
-- Preserve conservative normalization.
-- Salary fields should remain empty if the text is ambiguous, non-numeric, or words like `面议` / `保密` / `详谈` appear.
+- 不得编造。
+- 宁可留空，也不要填错。
+- 保持保守归一化。
+- 如果薪资文本有歧义、不是数字、或包含 `面议` / `保密` / `详谈` 等字样，薪资字段留空。
 
-## Current heuristics
+## 当前启发式规则
 
-### Name
+### 姓名
 
-Prefer explicit `姓名:` patterns. Fallback: one of the early standalone Chinese-name lines.
+优先匹配明确的 `姓名:` 模式；兜底时可使用简历前几行里独立出现的中文姓名行。
 
-### Contact
+### 联系方式
 
-Extract phone and email if present. Combine as `phone / email` when both exist.
+若能提取到手机号和邮箱，则组合成 `phone / email`；只命中一个时，只返回那一个。
 
-### Age
+### 年龄
 
-Use explicit `年龄:` patterns only.
+只使用明确的 `年龄:` 模式。
 
-### Degree
+### 学历
 
-Current keyword scan order:
+当前关键词扫描顺序：
 
 - 博士
 - 硕士
@@ -51,30 +51,30 @@ Current keyword scan order:
 - 中专
 - 高中
 
-### School
+### 毕业院校
 
-Use a conservative pattern ending with `大学` or `学院`.
+使用以 `大学` 或 `学院` 结尾的保守匹配模式。
 
-### Major
+### 专业
 
-Prefer explicit `专业:` patterns.
+优先匹配明确的 `专业:` 模式。
 
-### Full-time
+### 是否全日制
 
-Map:
+映射规则：
 
 - `全日制` => `是`
 - `非全日制|成人教育|自考|函授` => `否`
 
-### Latest company
+### 最近一家公司名称
 
-Prefer explicit patterns like `最近一家公司` / `最近公司` / `现公司` / `就职于`.
+优先匹配 `最近一家公司` / `最近公司` / `现公司` / `就职于` 等显式模式。
 
-### Intended position
+### 应聘岗位
 
-Prefer explicit patterns like `应聘岗位` / `求职意向` / `意向岗位`.
+优先匹配 `应聘岗位` / `求职意向` / `意向岗位` 等显式模式。
 
-When necessary, strip trailing unrelated labels from the same line, such as:
+必要时，需要从同一行中剔除后续无关标签，例如：
 
 - 意向城市
 - 期望薪资
@@ -85,11 +85,11 @@ When necessary, strip trailing unrelated labels from the same line, such as:
 - 现所在地
 - 最高学历
 
-## Output shape
+## 输出格式
 
-Return only populated keys. Do not emit empty-string fields.
+只返回有值的字段，不输出空字符串字段。
 
-Example:
+示例：
 
 ```json
 {
