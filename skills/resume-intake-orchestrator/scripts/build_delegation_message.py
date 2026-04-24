@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def normalize_mode(value: str) -> str:
-    allowed = {"single_pdf", "zip_batch", "analysis_only", "unknown"}
+    allowed = {"single_pdf", "multi_pdf", "zip_batch", "analysis_only", "unknown"}
     value = (value or "unknown").strip()
     if value not in allowed:
         raise SystemExit(f"不支持的 mode: {value}")

@@ -78,6 +78,26 @@ def main() -> int:
         }, ensure_ascii=False, indent=2))
         return 1
 
+    delegation = (confirmed.get("prepared") or {}).get("delegation") or {}
+    resolved_mode = delegation.get("mode") or "unknown"
+    resolved_files = delegation.get("files") or []
+    if not resolved_files:
+        print(json.dumps({
+            "ok": False,
+            "stage": "blocked_empty_input",
+            "error": "input_files=[]，主编排不应继续派发给 worker",
+            "prepared": confirmed,
+        }, ensure_ascii=False, indent=2))
+        return 2
+    if resolved_mode == "unknown":
+        print(json.dumps({
+            "ok": False,
+            "stage": "blocked_unknown_mode",
+            "error": "mode=unknown，主编排不应继续派发给 worker",
+            "prepared": confirmed,
+        }, ensure_ascii=False, indent=2))
+        return 2
+
     call = confirmed.get("sessionsSendCall") or {}
     envelope = {
         "ok": True,

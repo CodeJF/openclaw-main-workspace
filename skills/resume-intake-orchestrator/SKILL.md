@@ -70,9 +70,10 @@ Current live policy:
 
 - Do not run resume-intake business logic in this workspace.
 - Do not create a fresh worker for actual resume-intake execution.
-- Do not continue dispatch if helper output still has `input_files=[]` or `mode=unknown`.
+- Do not continue dispatch if helper output still has `input_files=[]` or `mode=unknown`; `prepare_dispatch_envelope.py` now returns `ok=false` with a `blocked_empty_input` or `blocked_unknown_mode` stage in those cases — treat that as a hard stop, not a hint.
 - Do not hand-build worker payloads when a stable helper already exists.
 - Do not assume a session-local reply means the Feishu user already received the result.
+- When the worker pushes a result back, only relay it to the Feishu user; do not re-run PDF parsing, field extraction, payload building, Bitable writes, or attachment uploads in this workspace.
 
 ## Current runtime scope
 
