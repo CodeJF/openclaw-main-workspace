@@ -17,5 +17,6 @@ Cutover note:
 ## Rules
 
 - Only target the existing OAuth-backed worker session.
+- Do not override `--agent-id` to `main`; dispatch helpers must keep the worker target on `resume-intake-local-test`.
 - Do not create a new worker for actual business execution.
 - If `sender_open_id` or Feishu direct-chat identity cannot be established safely, stop and report a blocker.

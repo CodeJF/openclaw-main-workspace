@@ -63,7 +63,9 @@ def main() -> int:
     ap.add_argument("--user-request", required=True)
     ap.add_argument("--message-id", default="unknown")
     ap.add_argument("--mode", default="unknown")
-    ap.add_argument("--inbound-text", required=True)
+    inbound_group = ap.add_mutually_exclusive_group(required=True)
+    inbound_group.add_argument("--inbound-text")
+    inbound_group.add_argument("--inbound-text-file")
     ap.add_argument("--reply-session-key", default="")
     ap.add_argument("--channel", default="feishu")
     ap.add_argument("--chat-type", default="direct")
@@ -71,8 +73,12 @@ def main() -> int:
     ap.add_argument("--confirm-token", required=True)
     args = ap.parse_args()
 
-    paths = extract_paths(args.inbound_text)
-    names = extract_display_names(args.inbound_text)
+    inbound_text = args.inbound_text
+    if args.inbound_text_file:
+        inbound_text = Path(args.inbound_text_file).read_text(encoding="utf-8")
+
+    paths = extract_paths(inbound_text)
+    names = extract_display_names(inbound_text)
     resolved_mode = infer_mode(paths, args.mode)
 
     cmd = [

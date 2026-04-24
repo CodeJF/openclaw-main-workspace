@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 DERIVE = ROOT / "derive_session_target.py"
 BUILD = ROOT / "build_delegation_message.py"
+FORBIDDEN_AGENT_IDS = {"main", "agent:main"}
 
 
 def run_json(cmd: list[str]) -> dict:
@@ -20,6 +21,17 @@ def run_json(cmd: list[str]) -> dict:
         return json.loads(proc.stdout)
     except json.JSONDecodeError as exc:
         raise SystemExit(f"输出不是合法 JSON: {exc}\n{proc.stdout}")
+
+
+def normalize_agent_id(value: str) -> str:
+    agent_id = (value or "resume-intake-local-test").strip()
+    if not agent_id:
+        raise SystemExit("agent-id 不能为空")
+    if agent_id in FORBIDDEN_AGENT_IDS:
+        raise SystemExit(
+            "agent-id 不能指向 main。resume-intake 主编排只能把任务派给既有业务 worker，会话目标应保持为 resume-intake-local-test。"
+        )
+    return agent_id
 
 
 def main() -> int:
@@ -35,6 +47,7 @@ def main() -> int:
     ap.add_argument("--file", dest="files", action="append", default=[])
     ap.add_argument("--file-display-name", dest="file_display_names", action="append", default=[])
     args = ap.parse_args()
+    agent_id = normalize_agent_id(args.agent_id)
 
     target = run_json([
         sys.executable,
@@ -46,7 +59,7 @@ def main() -> int:
         "--chat-type",
         args.chat_type,
         "--agent-id",
-        args.agent_id,
+        agent_id,
     ])
     if not target.get("ok"):
         print(json.dumps(target, ensure_ascii=False, indent=2))

@@ -17,6 +17,7 @@ Do not delegate when the user is only asking about:
 ## Handoff rules
 
 - Prefer `prepare_dispatch_envelope_from_inbound.py` when the source request is a raw attachment message.
+- When the inbound text contains markdown fences, JSON snippets, or multiple shell-sensitive lines, prefer `--inbound-text-file` instead of shell-inlining the whole message.
 - If helper output still has `input_files=[]`, stop.
 - If helper output still has `mode=unknown`, stop.
 - Only after the envelope is valid should the orchestrator call `sessions_send`.
