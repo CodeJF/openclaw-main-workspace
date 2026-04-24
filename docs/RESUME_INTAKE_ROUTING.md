@@ -4,6 +4,8 @@
 
 如果要理解为什么 direct worker 稳、而 orchestrated path 更容易出错，以及主编排和 worker 的边界应该怎么划，先看 `docs/RESUME_INTAKE_ORCHESTRATION_NOTES.md`。
 
+迁移期间，这份 root doc 继续保留；更接近长期 skill 结构的对应材料在 `skills/resume-intake-orchestrator/references/` 下。
+
 ## 什么时候触发委派
 
 满足以下任一条件时，默认走 `workspace-resume-intake`：

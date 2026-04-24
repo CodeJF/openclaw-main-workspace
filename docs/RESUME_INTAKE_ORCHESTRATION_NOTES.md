@@ -1,5 +1,7 @@
 # Resume-intake orchestration notes
 
+迁移期间，这份 root doc 继续保留；skill 化后的对应参考在 `skills/resume-intake-orchestrator/references/orchestration.md`。
+
 这份文档补充说明：为什么 direct worker 路径稳定，而经过主编排的 orchestrated 路径更容易出错，以及以后类似需求应该优先检查哪里。
 
 ## 一句话模型

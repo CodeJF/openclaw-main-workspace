@@ -2,6 +2,8 @@
 
 这个文件定义 main agent 如何把任务直接送到**已有 OAuth 上下文**的 `workspace-resume-intake` 业务会话。
 
+迁移期间，这份 root doc 继续保留；skill 化后的对应参考在 `skills/resume-intake-orchestrator/references/session-targeting.md`。
+
 ## 目标原则
 
 - 不新开 subagent 去执行 resume-intake 业务

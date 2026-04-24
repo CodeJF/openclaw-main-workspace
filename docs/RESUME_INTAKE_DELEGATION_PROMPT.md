@@ -2,6 +2,8 @@
 
 这个文件定义 main agent 发给既有 `workspace-resume-intake` 业务会话的委派内容。
 
+迁移期间，这份 root doc 继续保留；skill 化后的对应参考在 `skills/resume-intake-orchestrator/references/delegation-prompt.md`。
+
 它只保留 main agent 向 `workspace-resume-intake` 委派任务时，必须讲清楚的内容：
 
 - 用户原始请求
