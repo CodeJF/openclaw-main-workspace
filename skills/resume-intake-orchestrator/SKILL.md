@@ -45,7 +45,7 @@ Read these references as needed:
 - `references/compat-doc-map.md`
   - mapping between current root docs and the new skill-reference layout
 - `references/script-migration-plan.md`
-  - future plan for making the orchestrator skill self-contained without moving live scripts yet
+  - cutover history and current script-path policy for the orchestrator
 - `references/cutover-checklist.md`
   - pre-cutover checklist for switching live guidance to skill-local scripts without touching business semantics
 
@@ -74,8 +74,8 @@ Current live policy:
 - Do not hand-build worker payloads when a stable helper already exists.
 - Do not assume a session-local reply means the Feishu user already received the result.
 
-## Current bootstrap scope
+## Current runtime scope
 
-This skill is currently a knowledge-entry skeleton only.
+This skill is now the live orchestration entry for the main workspace resume-intake path.
 
-It exists to centralize orchestration guidance without changing the live routing path yet.
+It centralizes dispatch guidance, skill-local helper usage, and worker handoff boundaries while leaving business execution in `workspace-resume-intake`.

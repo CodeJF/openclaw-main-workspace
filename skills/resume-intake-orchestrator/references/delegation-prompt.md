@@ -16,6 +16,7 @@ Core expectation:
 - the orchestrator only dispatches
 - the worker performs actual resume-intake execution
 - the worker returns one formal result or blocker
+- the orchestrator should prefer fire-and-forget dispatch (`timeoutSeconds=0`) and let the worker send the real result back separately
 
 Prefer the skill-local helpers instead of hand-writing delegation text:
 

@@ -15,6 +15,25 @@ FILE_NAME_TAG_RE = re.compile(r'<file\s+name="([^"]+)"', re.IGNORECASE)
 FILE_NAME_INLINE_RE = re.compile(r'\[File:\s+(.+?)\]')
 
 
+def maybe_unmangle_filename(value: str) -> str:
+    raw = (value or "").strip()
+    if not raw:
+        return raw
+    suspicious = any(token in raw for token in ("ã_", "æ_", "å_", "ç_", "é_", "Ã", "Â"))
+    if not suspicious:
+        return raw
+    compact = raw.replace("_", "")
+    candidates = [raw, compact]
+    for item in candidates:
+        try:
+            fixed = item.encode("latin1").decode("utf-8")
+        except Exception:
+            continue
+        if fixed and fixed != raw:
+            return fixed
+    return raw
+
+
 def infer_mode(paths: list[str], explicit_mode: str) -> str:
     mode = (explicit_mode or "").strip().lower()
     if mode and mode != "unknown":
@@ -44,14 +63,14 @@ def extract_paths(text: str) -> list[str]:
 def extract_display_names(text: str) -> list[str]:
     found: list[str] = []
     for match in FILE_NAME_TAG_RE.finditer(text or ""):
-        value = match.group(1).strip()
+        value = maybe_unmangle_filename(match.group(1).strip())
         if value:
             found.append(value)
     if found:
         return found
     for match in FILE_NAME_INLINE_RE.finditer(text or ""):
         raw = match.group(1).strip()
-        value = Path(raw).name.strip()
+        value = maybe_unmangle_filename(Path(raw).name.strip())
         if value:
             found.append(value)
     return found

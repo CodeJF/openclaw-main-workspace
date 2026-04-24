@@ -21,5 +21,6 @@ Do not delegate when the user is only asking about:
 - If helper output still has `input_files=[]`, stop.
 - If helper output still has `mode=unknown`, stop.
 - Only after the envelope is valid should the orchestrator call `sessions_send`.
+- For orchestrator -> worker dispatch, prefer the helper-generated `sessions_send` arguments as-is, including `timeoutSeconds=0`; do not turn the handoff into a long synchronous wait unless the user explicitly needs blocking behavior.
 - Worker returns one formal result or blocker to the designated source session.
 - Orchestrator is responsible for the final explicit user-facing reply.
