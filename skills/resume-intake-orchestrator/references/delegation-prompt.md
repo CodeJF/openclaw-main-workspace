@@ -24,6 +24,6 @@ Prefer the skill-local helpers instead of hand-writing delegation text:
 - `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_sessions_send.py`
 - `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_confirmed_sessions_send.py`
 
-Compatibility note:
+Cutover note:
 
-- the root copies under `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/` remain in place and should not be deleted or silently rerouted yet.
+- the skill-local copies under `skills/resume-intake-orchestrator/scripts/` are now the default path for delegation helpers.

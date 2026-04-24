@@ -4,9 +4,9 @@ This reference defines the **next-stage script migration plan** for `resume-inta
 
 Current policy:
 
-- do **not** move live scripts yet
-- do **not** change current live imports/calls yet
-- do **not** make orchestrator skill the only runtime path yet
+- use the skill-local scripts as the canonical orchestrator path
+- keep root docs aligned with the skill-local paths
+- keep rollback via Git available if a regression appears
 
 The goal here is only to define a safe future script layout and migration order.
 
@@ -25,18 +25,18 @@ Stage 1 is now in place:
   - `prepare_confirmed_sessions_send.py` zip batch
   - `prepare_dispatch_envelope.py` unknown mode
   - `prepare_dispatch_envelope_from_inbound.py` single PDF / zip batch / multi PDF / no files
-- no live routing or entry instructions were switched yet
+- live docs and entry instructions are ready to point to the skill-local paths
 
-## Current live scripts still in root workspace
+## Canonical scripts after cutover
 
-These scripts remain the current source of truth for live orchestration behavior:
+These scripts are now the canonical orchestrator helpers:
 
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/derive_session_target.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/build_delegation_message.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_sessions_send.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_confirmed_sessions_send.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_dispatch_envelope.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_dispatch_envelope_from_inbound.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/derive_session_target.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/build_delegation_message.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_sessions_send.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_confirmed_sessions_send.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_dispatch_envelope.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_dispatch_envelope_from_inbound.py`
 
 ## Target future layout
 
@@ -103,17 +103,17 @@ Before any live cutover:
 
 ### Step 4: Cut live references only after stable parity
 
-Status: plan documented, not executed.
+Status: executed on 2026-04-24 after representative parity checks.
 
 Only after parity is confirmed:
 
 - update live docs / entry instructions to point to the skill-local scripts first
-- leave the root scripts in place for a compatibility window
+- update root docs and skill guidance to point to the skill-local scripts
 - use `references/cutover-checklist.md` before changing any live-facing guidance
 
 ### Step 5: Remove root copies last
 
-Only after a stable observation window:
+Status: executed on 2026-04-24 after doc cutover and smoke validation.
 
 - delete the redundant root copies
 - keep the skill-local scripts as the only canonical copies
@@ -130,11 +130,11 @@ Do not move to live cutover unless all are true:
 
 ## Rollback boundary
 
-If any discrepancy appears during migration:
+If any discrepancy appears after cutover:
 
-- revert references back to root scripts
-- keep skill-local copies as inactive staging files
-- do not delete root scripts
+- restore the deleted root copies from Git
+- keep the skill-local copies as the intended canonical path
+- do not invent ad-hoc replacement paths outside the skill
 
 ## Why this plan is conservative
 

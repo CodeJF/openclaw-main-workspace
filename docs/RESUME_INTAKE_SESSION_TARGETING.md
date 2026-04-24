@@ -43,22 +43,22 @@ agent:resume-intake-local-test:feishu:direct:<sender_open_id>
 
 为避免 main 侧每次手写 key 和委派文本，当前工作区提供两个辅助脚本：
 
-- `scripts/resume_intake/derive_session_target.py`
+- `skills/resume-intake-orchestrator/scripts/derive_session_target.py`
   - 输入：`sender_open_id`、`channel`、`chat_type`
   - 输出：可安全使用的 `sessionKey`
-- `scripts/resume_intake/build_delegation_message.py`
+- `skills/resume-intake-orchestrator/scripts/build_delegation_message.py`
   - 输入：用户请求、文件路径、mode、message_id
   - 输出：发给既有业务会话的委派消息正文
-- `scripts/resume_intake/prepare_sessions_send.py`
+- `skills/resume-intake-orchestrator/scripts/prepare_sessions_send.py`
   - 输入：`sender_open_id` + 用户请求 + 文件路径 + mode + message_id（`reply_session_key` 可选）
   - 输出：可直接用于 `sessions_send` 的 dry-run payload（不真实发送）
-- `scripts/resume_intake/prepare_confirmed_sessions_send.py`
+- `skills/resume-intake-orchestrator/scripts/prepare_confirmed_sessions_send.py`
   - 输入：与上面相同，外加 `--confirm-token`（`reply_session_key` 可选）
   - 输出：带显式确认门槛的待发送 payload
-- `scripts/resume_intake/prepare_dispatch_envelope.py`
+- `skills/resume-intake-orchestrator/scripts/prepare_dispatch_envelope.py`
   - 输入：与上面相同，且必须带 `--confirm-token`（`reply_session_key` 可选）
   - 输出：最终可交给 assistant `sessions_send` 工具执行的 envelope
-- `scripts/resume_intake/prepare_dispatch_envelope_from_inbound.py`
+- `skills/resume-intake-orchestrator/scripts/prepare_dispatch_envelope_from_inbound.py`
   - 输入：`sender_open_id` + `user_request` + 原始 inbound message text + `message_id` + `confirm-token`（`reply_session_key` 可选）
   - 输出：自动从原消息里提取 `attachment_path` 与 `<file name="...">`，再生成最终 dispatch envelope，适合附件入口避免文件名乱码漂移
 
@@ -73,7 +73,7 @@ agent:resume-intake-local-test:feishu:direct:<sender_open_id>
 在真正调用 `sessions_send` 前，可以先运行：
 
 ```bash
-python3 scripts/resume_intake/prepare_sessions_send.py \
+python3 skills/resume-intake-orchestrator/scripts/prepare_sessions_send.py \
   --sender-open-id <sender_open_id> \
   --user-request '把这份简历录入飞书' \
   --mode single_pdf \
@@ -89,7 +89,7 @@ python3 scripts/resume_intake/prepare_sessions_send.py \
 如果要进入“可发送”状态，可以再运行：
 
 ```bash
-python3 scripts/resume_intake/prepare_confirmed_sessions_send.py \
+python3 skills/resume-intake-orchestrator/scripts/prepare_confirmed_sessions_send.py \
   --sender-open-id <sender_open_id> \
   --user-request '把这份简历录入飞书' \
   --mode single_pdf \
@@ -103,7 +103,7 @@ python3 scripts/resume_intake/prepare_confirmed_sessions_send.py \
 如果要得到最终 dispatch envelope，可以再运行：
 
 ```bash
-python3 scripts/resume_intake/prepare_dispatch_envelope.py \
+python3 skills/resume-intake-orchestrator/scripts/prepare_dispatch_envelope.py \
   --sender-open-id <sender_open_id> \
   --user-request '把这份简历录入飞书' \
   --mode single_pdf \

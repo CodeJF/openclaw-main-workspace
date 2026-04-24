@@ -60,11 +60,11 @@ A skill-local `scripts/` copy now exists for staged migration and parity checks:
 - `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_confirmed_sessions_send.py`
 - `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/build_delegation_message.py`
 
-Current live policy remains conservative:
+Current live policy:
 
-- keep `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/*` as the live-compatible copies
-- use the skill-local copies for staged migration, parity checks, and future cutover prep
-- do not delete or silently reroute the root copies yet
+- use the skill-local copies as the canonical execution path
+- keep guidance and examples aligned with `skills/resume-intake-orchestrator/scripts/*`
+- if a regression appears after cutover, restore the deleted root copies from Git rather than improvising alternate paths
 
 ## Hard boundaries
 

@@ -1,8 +1,8 @@
 # Cutover checklist
 
-Use this reference only when preparing to switch live orchestrator guidance from the root `scripts/resume_intake/*` copies to the skill-local `scripts/` copies.
+Use this reference only when preparing to switch live orchestrator guidance from the former root script copies to the skill-local `scripts/` copies.
 
-This is a **cutover-prep checklist**, not permission to cut over immediately.
+This checklist records the cutover gate for the 2026-04-24 switch and remains the reference for any future re-check.
 
 ## Preconditions
 
@@ -12,6 +12,8 @@ All of these must already be true:
 2. representative old-path vs new-path parity checks have passed
 3. root scripts are still intact
 4. current business path is stable
+
+Recorded status on 2026-04-24: satisfied before cutover.
 
 ## What cutover means here
 
@@ -81,11 +83,11 @@ When the team decides the cutover is worth doing, use this order:
 
 ## Compatibility window expectations
 
-During the compatibility window:
+During any future compatibility window:
 
-- root scripts remain available
-- old docs may still mention root paths in compatibility notes
-- any regression should revert guidance back to the root copies first
+- keep guidance aligned to the skill-local scripts
+- use Git restoration rather than shadow copies if rollback is needed
+- avoid reviving duplicate root paths casually
 
 ## Explicit no-go conditions
 
@@ -100,6 +102,6 @@ Do **not** cut over if any of these are true:
 
 If a cutover causes confusion or drift:
 
-1. point live guidance back to `scripts/resume_intake/*`
-2. keep skill-local copies for staging only
-3. do not delete either side until parity is re-established
+1. restore the deleted root copies from Git if needed
+2. keep the skill-local copies as the intended canonical path unless rollback requires otherwise
+3. re-establish parity before attempting another cutover

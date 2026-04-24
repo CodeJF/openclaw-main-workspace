@@ -10,9 +10,9 @@ Prefer the skill-local helper for targeting:
 
 - `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/derive_session_target.py`
 
-Compatibility note:
+Cutover note:
 
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/derive_session_target.py` remains available as the live-compatible root copy during migration.
+- the skill-local helper is now the canonical session-targeting path.
 
 ## Rules
 

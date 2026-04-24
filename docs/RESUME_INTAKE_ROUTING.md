@@ -26,9 +26,9 @@
 触发后，`main agent` 应做 4 步：
 
 1. 先按 `docs/RESUME_INTAKE_SESSION_TARGETING.md` 命中已有 OAuth 上下文的 `workspace-resume-intake` 业务会话
-2. 可先用 `scripts/resume_intake/derive_session_target.py` 推导目标 `sessionKey`
-3. 再用 `scripts/resume_intake/build_delegation_message.py` 生成委派消息，并通过 `sessions_send` 发给这个既有业务会话
-   - 如果请求来自原始附件消息，优先用 `scripts/resume_intake/prepare_dispatch_envelope_from_inbound.py`，避免只传缓存 `attachment_path` 而丢掉原始文件名
+2. 可先用 `skills/resume-intake-orchestrator/scripts/derive_session_target.py` 推导目标 `sessionKey`
+3. 再用 `skills/resume-intake-orchestrator/scripts/build_delegation_message.py` 生成委派消息，并通过 `sessions_send` 发给这个既有业务会话
+   - 如果请求来自原始附件消息，优先用 `skills/resume-intake-orchestrator/scripts/prepare_dispatch_envelope_from_inbound.py`，避免只传缓存 `attachment_path` 而丢掉原始文件名
 4. 优先走异步 handoff，不要因为 worker 尚未在当前等待窗口内返回，就让用户重复确认已经明确的录入意图
 5. 等它返回最终结果后，再由 `main agent` 对用户回复
 

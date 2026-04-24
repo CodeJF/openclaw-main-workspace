@@ -16,7 +16,7 @@
 
 - `sessions_send`
 - 目标：按 `docs/RESUME_INTAKE_SESSION_TARGETING.md` 命中的既有 Feishu direct 业务会话
-- 可先用 `scripts/resume_intake/prepare_sessions_send.py`、`prepare_confirmed_sessions_send.py`，或最终的 `prepare_dispatch_envelope.py` 生成 payload，再由 assistant 调用 `sessions_send`
+- 可先用 `skills/resume-intake-orchestrator/scripts/prepare_sessions_send.py`、`prepare_confirmed_sessions_send.py`，或最终的 `prepare_dispatch_envelope.py` 生成 payload，再由 assistant 调用 `sessions_send`
 
 原则只有一条：
 

@@ -17,7 +17,7 @@
 仍保留：
 
 - root `docs/` 继续作为兼容入口
-- `scripts/resume_intake/*` 继续留在 workspace root
+- `skills/resume-intake-orchestrator/scripts/*` 已成为默认执行路径
 - live 主链路暂不因为 skill 骨架存在而改路由
 
 下一步不再是“补更多主链路逻辑”，而是按需继续做兼容收口和后续脚本迁移准备。
@@ -30,7 +30,7 @@
 - `docs/RESUME_INTAKE_ROUTING.md`
 - `docs/RESUME_INTAKE_SESSION_TARGETING.md`
 - `docs/RESUME_INTAKE_ORCHESTRATION_NOTES.md`
-- `scripts/resume_intake/*`
+- `skills/resume-intake-orchestrator/scripts/*`
 
 最终形成更清晰的两层结构：
 
@@ -152,7 +152,7 @@ skills/
 - `docs/RESUME_INTAKE_ROUTING.md` -> `references/orchestration.md`
 - `docs/RESUME_INTAKE_SESSION_TARGETING.md` -> `references/session-targeting.md`
 - `docs/RESUME_INTAKE_ORCHESTRATION_NOTES.md` -> `references/failure-modes.md` 或 `references/orchestration.md`
-- `scripts/resume_intake/*` 暂时原地保留，可由 skill 引用
+- `skills/resume-intake-orchestrator/scripts/*` 已承接主编排脚本入口
 
 目标：
 
@@ -214,22 +214,18 @@ skills/
   - **内容适合直接迁进 skill references**
 - `docs/RESUME_INTAKE_DELEGATION_PROMPT.md`
   - 可保留，也可迁成 skill reference 的模板说明
-- `scripts/resume_intake/*`
+- `skills/resume-intake-orchestrator/scripts/*`
   - **短期不移动**，避免改动主链路引用路径
   - 中后期再评估是否迁到 orchestrator skill 目录
 
 ## 为什么短期不移动 scripts
 
-虽然从结构上看，把 `scripts/resume_intake/*` 一起迁进 skill 更整洁，但现在不建议立刻做，因为：
+现在这些脚本已经迁进 orchestrator skill，并通过代表性 parity 检查。
 
-- 这些脚本已经被当前文档和主链路引用
-- 一旦改路径，就不再是“只做结构整理”，而是变成真实主链路改造
-- 当前优先级是“规则收敛”，不是“路径重构”
+因此当前建议变为：
 
-因此短期建议：
-
-- **先由 orchestrator skill 引用现有 scripts 路径**
-- 等业务稳定一段时间后，再考虑迁目录
+- **优先执行 `skills/resume-intake-orchestrator/scripts/*`**
+- 根目录旧脚本不再作为默认入口
 
 ## 验收标准
 

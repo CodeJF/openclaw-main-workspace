@@ -4,10 +4,9 @@ This skill is introduced as a low-risk migration step.
 
 ## Current scope
 
-- skill-local script copies now exist for staged migration
-- no live path replacement yet
-- no root-script removal yet
-- no business execution changes
+- skill-local scripts are now the default orchestrator path
+- root script copies are no longer the intended entry point
+- no business execution semantics changed
 
 ## Near-term intent
 
@@ -17,6 +16,6 @@ This skill is introduced as a low-risk migration step.
 
 ## Do not do yet
 
-- do not delete `scripts/resume_intake/*`
-- do not delete current root docs
-- do not switch the live path solely because the skill-local copies now exist
+- do not change worker business semantics during this migration
+- do not delete current root docs solely for tidiness
+- do not introduce alternate non-skill script paths
