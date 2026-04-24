@@ -46,17 +46,25 @@ Read these references as needed:
   - mapping between current root docs and the new skill-reference layout
 - `references/script-migration-plan.md`
   - future plan for making the orchestrator skill self-contained without moving live scripts yet
+- `references/cutover-checklist.md`
+  - pre-cutover checklist for switching live guidance to skill-local scripts without touching business semantics
 
 ## Stable scripts
 
-Use these existing scripts in the workspace root. Do not move them as part of this skill bootstrap:
+A skill-local `scripts/` copy now exists for staged migration and parity checks:
 
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/derive_session_target.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_dispatch_envelope.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_dispatch_envelope_from_inbound.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_sessions_send.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_confirmed_sessions_send.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/build_delegation_message.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/derive_session_target.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_dispatch_envelope.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_dispatch_envelope_from_inbound.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_sessions_send.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_confirmed_sessions_send.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/build_delegation_message.py`
+
+Current live policy remains conservative:
+
+- keep `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/*` as the live-compatible copies
+- use the skill-local copies for staged migration, parity checks, and future cutover prep
+- do not delete or silently reroute the root copies yet
 
 ## Hard boundaries
 

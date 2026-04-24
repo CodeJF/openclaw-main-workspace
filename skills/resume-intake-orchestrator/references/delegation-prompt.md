@@ -17,9 +17,13 @@ Core expectation:
 - the worker performs actual resume-intake execution
 - the worker returns one formal result or blocker
 
-Prefer the stable helpers in the workspace root instead of hand-writing delegation text:
+Prefer the skill-local helpers instead of hand-writing delegation text:
 
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_dispatch_envelope.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_dispatch_envelope_from_inbound.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_sessions_send.py`
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/prepare_confirmed_sessions_send.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_dispatch_envelope.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_dispatch_envelope_from_inbound.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_sessions_send.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/prepare_confirmed_sessions_send.py`
+
+Compatibility note:
+
+- the root copies under `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/` remain in place and should not be deleted or silently rerouted yet.

@@ -6,6 +6,22 @@
 
 **注意：本方案当前不要求修改正在工作的主链路代码。**
 
+## 当前状态（2026-04-24）
+
+已完成：
+
+- `skills/resume-intake-orchestrator/` 已建立
+- 主要编排规则已收敛到 skill references
+- `AGENTS.md` 已缩薄为 skill 入口和硬边界
+
+仍保留：
+
+- root `docs/` 继续作为兼容入口
+- `scripts/resume_intake/*` 继续留在 workspace root
+- live 主链路暂不因为 skill 骨架存在而改路由
+
+下一步不再是“补更多主链路逻辑”，而是按需继续做兼容收口和后续脚本迁移准备。
+
 ## 目标
 
 把当前分散在以下位置的编排规则逐步收敛：

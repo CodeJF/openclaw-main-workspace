@@ -6,9 +6,13 @@ Current stable worker session pattern:
 agent:resume-intake-local-test:feishu:direct:<sender_open_id>
 ```
 
-Use the existing helper for targeting:
+Prefer the skill-local helper for targeting:
 
-- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/derive_session_target.py`
+- `/Users/jianfengxu/.openclaw/workspace/skills/resume-intake-orchestrator/scripts/derive_session_target.py`
+
+Compatibility note:
+
+- `/Users/jianfengxu/.openclaw/workspace/scripts/resume_intake/derive_session_target.py` remains available as the live-compatible root copy during migration.
 
 ## Rules
 

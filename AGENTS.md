@@ -68,26 +68,18 @@ Formatting reminders:
 
 When the user wants a resume entered into Feishu Bitable, treat this workspace as the orchestrator only.
 
-- Use the `resume-intake-orchestrator` skill as the primary knowledge entry for this path.
-- Send the task directly to the existing `workspace-resume-intake` business session that already holds the user's OAuth context.
-- Let that business session handle resume-intake business logic and actual intake execution.
-- Keep user-visible coordination in the main session, then give the final reply here.
-- Do not re-implement resume-intake business rules in this workspace if the worker can own them.
-- Treat a single resume PDF, a ZIP of resumes, or an explicit “录入/导入简历到飞书” request as the default trigger to delegate.
+- Use the `resume-intake-orchestrator` skill as the primary knowledge entry.
+- Main dispatches to the existing `workspace-resume-intake` business session, waits, and replies here.
+- Do not re-implement resume-intake business logic in this workspace.
 
 ### Hard guards
 
-- If the request is not from a Feishu direct chat with a valid `sender_open_id`, treat it as unable to safely hit the existing OAuth business session and return a blocker instead of improvising.
-- Do not create a fresh subagent or temporary worker for actual resume-intake execution.
-- Do not let main perform Feishu user-state create, upload, or update operations for resume-intake.
-- Do not guess the target session key when required inputs are missing.
-- The only success path for execution is: main dispatches, `workspace-resume-intake` executes, main replies.
+- If the request is not from a Feishu direct chat with a valid `sender_open_id`, return a blocker instead of improvising.
+- Do not create a fresh worker for actual resume-intake execution.
+- Do not let main perform Feishu create/upload/update operations for resume-intake.
+- The only success path is: main dispatches, `workspace-resume-intake` executes, main replies.
 
-### Worker reply contract
-
-- The worker must reply only to the `sourceSessionKey` of the current delegation message.
-- Main should only treat the worker's formal structured result or blocker as meaningful output.
-- If stray control messages such as `NO_REPLY`, `ANNOUNCE_SKIP`, or `REPLY_SKIP` ever appear from the worker, treat them as noise and ignore them.
+For routing, session targeting, dispatch-envelope rules, and worker reply boundaries, read the skill references instead of expanding this file again.
 
 ## Heartbeats
 

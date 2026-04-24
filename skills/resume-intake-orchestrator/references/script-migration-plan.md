@@ -10,6 +10,23 @@ Current policy:
 
 The goal here is only to define a safe future script layout and migration order.
 
+## Current status (2026-04-24)
+
+Stage 1 is now in place:
+
+- the root scripts were copied into `skills/resume-intake-orchestrator/scripts/`
+- the copied files were kept byte-identical to the root versions
+- representative old-path vs new-path runs matched for `derive_session_target.py` and `prepare_dispatch_envelope_from_inbound.py`
+- an extended parity matrix also passed for:
+  - `derive_session_target.py` valid sender
+  - `derive_session_target.py` invalid sender
+  - `build_delegation_message.py` single PDF
+  - `prepare_sessions_send.py` single PDF
+  - `prepare_confirmed_sessions_send.py` zip batch
+  - `prepare_dispatch_envelope.py` unknown mode
+  - `prepare_dispatch_envelope_from_inbound.py` single PDF / zip batch / multi PDF / no files
+- no live routing or entry instructions were switched yet
+
 ## Current live scripts still in root workspace
 
 These scripts remain the current source of truth for live orchestration behavior:
@@ -52,6 +69,8 @@ Use this order only in a later migration phase:
 
 ### Step 1: Copy, do not replace
 
+Status: completed on 2026-04-24.
+
 - copy the root orchestrator scripts into `skills/resume-intake-orchestrator/scripts/`
 - keep root scripts untouched
 - verify the copied scripts still run correctly from the new location
@@ -59,12 +78,17 @@ Use this order only in a later migration phase:
 
 ### Step 2: Make skill references prefer local scripts
 
+Status: completed on 2026-04-24 for skill-local references.
+
 After copied scripts are verified:
 
 - update `SKILL.md` to prefer `scripts/...` under the skill directory
+- update skill references to prefer the skill-local copies
 - keep a compatibility note pointing to the root copies
 
 ### Step 3: Compare behavior, not just file contents
+
+Status: representative parity checks completed on 2026-04-24, but live cutover is still not approved.
 
 Before any live cutover:
 
@@ -79,10 +103,13 @@ Before any live cutover:
 
 ### Step 4: Cut live references only after stable parity
 
+Status: plan documented, not executed.
+
 Only after parity is confirmed:
 
 - update live docs / entry instructions to point to the skill-local scripts first
 - leave the root scripts in place for a compatibility window
+- use `references/cutover-checklist.md` before changing any live-facing guidance
 
 ### Step 5: Remove root copies last
 

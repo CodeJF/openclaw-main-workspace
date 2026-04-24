@@ -4,9 +4,9 @@ This skill is introduced as a low-risk migration step.
 
 ## Current scope
 
-- knowledge entry only
-- no live path replacement
-- no script relocation
+- skill-local script copies now exist for staged migration
+- no live path replacement yet
+- no root-script removal yet
 - no business execution changes
 
 ## Near-term intent
@@ -17,6 +17,6 @@ This skill is introduced as a low-risk migration step.
 
 ## Do not do yet
 
-- do not move `scripts/resume_intake/*`
+- do not delete `scripts/resume_intake/*`
 - do not delete current root docs
-- do not switch the live path solely because this skeleton exists
+- do not switch the live path solely because the skill-local copies now exist
